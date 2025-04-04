@@ -32,7 +32,9 @@ processed_files = 0
 # Iterate over all image files in the input directory
 if not input_dir.exists():
     print(f"Input directory '{input_dir}' does not exist.")
+    os.system("pause")
     sys.exit(1)
+
 for image_path in input_dir.glob("*"):
     # Process only files with valid image extensions
     if image_path.suffix.lower() not in [".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".gif"]:
