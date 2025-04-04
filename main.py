@@ -1,31 +1,42 @@
 from PIL import Image
 import pytesseract
 from openpyxl import Workbook
-
-# Optional: Set path to tesseract executable if not in PATH
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+from pathlib import Path
 
 def extract_text_from_image(image_path):
     image = Image.open(image_path)
     extracted_text = pytesseract.image_to_string(image)
     return extracted_text
 
-def write_text_to_excel(text, output_excel_path):
+def write_text_to_excel(extracted_text, output_excel_path):
     wb = Workbook()
     ws = wb.active
-    ws.title = "OCR Output"
 
     # Split text by lines and write to Excel
-    for row_idx, line in enumerate(text.splitlines(), start=1):
+    for row_idx, line in enumerate(extracted_text.splitlines(), start=1):
         ws.cell(row=row_idx, column=1, value=line)
 
     wb.save(output_excel_path)
 
-# Example usage
-image_path = "3EA9C631-1420-4132-84B6-3D1E0E02433F.png"
-excel_path = "output_text.xlsx"
+# Define input and output directories
+input_dir = Path("in")
+output_dir = Path("out")
+output_dir.mkdir(exist_ok=True)
 
-text = extract_text_from_image(image_path)
-write_text_to_excel(text, excel_path)
+# Counter for processed files
+processed_files = 0
 
-print("Text extracted and saved to Excel.")
+# Iterate over all image files in the input directory
+for image_path in input_dir.glob("*"):
+    # Process only files with valid image extensions
+    if image_path.suffix.lower() not in [".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".gif"]:
+        continue
+
+    text = extract_text_from_image(image_path)
+    # Create an Excel file name based on the image file stem
+    excel_path = output_dir / f"{image_path.stem}.xlsx"
+    write_text_to_excel(text, excel_path)
+    processed_files += 1
+    print(f'Processed "{image_path.name}" and saved to "{excel_path}".')
+
+print(f"Total files processed: {processed_files}")
