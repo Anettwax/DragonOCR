@@ -40,3 +40,4 @@ for image_path in input_dir.glob("*"):
     print(f'Processed "{image_path.name}" and saved to "{excel_path}".')
 
 print(f"Total files processed: {processed_files}")
+os.system("pause")
